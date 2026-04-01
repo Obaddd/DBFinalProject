@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="card card-soft">
+            <div class="card-body">
+                <h2 class="h5">Create Order</h2>
+                <form method="post" action="{{ url_for('add_order') }}">
+                    <div class="mb-3">
+                        <label class="form-label">Customer</label>
+                        <select name="customer_id" class="form-select" required>
+                            {% for customer in customers %}<option value="{{ customer.customer_id }}">{{ customer.name }}</option>{% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Order Type</label>
+                        <select name="order_type" class="form-select">
+                            <option>Pickup</option>
+                            <option>Dine-In</option>
+                            <option>Delivery</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Status</label>
+                        <select name="status" class="form-select">
+                            <option>Placed</option>
+                            <option>Preparing</option>
+                            <option>Ready</option>
+                            <option>Completed</option>
+                        </select>
+                    </div>
+                    <h3 class="h6 mt-4">Order Items</h3>
+                    {% for i in range(3) %}
+                    <div class="border rounded p-3 mb-3">
+                        <div class="mb-2">
+                            <label class="form-label">Menu Item</label>
+                            <select name="food_name" class="form-select">
+                                <option value="">Select an item</option>
+                                {% for item in menu_items %}<option value="{{ item.food_name }}">{{ item.food_name }} - {{ item.price|currency }}</option>{% endfor %}
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label">Quantity</label>
+                            <input name="quantity" type="number" min="1" class="form-control" placeholder="1">
+                        </div>
+                    </div>
+                    {% endfor %}
+                    <button class="btn btn-dark w-100">Create Order</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        <div class="card card-soft">
+            <div class="card-body">
+                <h2 class="h5">Orders</h2>
+                <div class="table-responsive">
+                    <table class="table table-striped align-middle">
+                        <thead><tr><th>ID</th><th>Customer</th><th>Type</th><th>Status</th><th>Items</th><th>Cost</th><th>Actions</th></tr></thead>
+                        <tbody>
+                            {% for order, customer_name, item_count in order_rows %}
+                            <tr>
+                                <td>{{ order.order_id }}</td>
+                                <td>{{ customer_name }}</td>
+                                <td>{{ order.order_type }}</td>
+                                <td>
+                                    <form method="post" action="{{ url_for('update_order_status', order_id=order.order_id) }}" class="d-flex gap-2">
+                                        <select name="status" class="form-select form-select-sm">
+                                            {% for status in ['Placed','Preparing','Ready','Completed'] %}<option {% if order.status == status %}selected{% endif %}>{{ status }}</option>{% endfor %}
+                                        </select>
+                                        <button class="btn btn-sm btn-outline-primary">Save</button>
+                                    </form>
+                                </td>
+                                <td>{{ item_count }}</td>
+                                <td>{{ order.cost|currency }}</td>
+                                <td>
+                                    <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('order_details', order_id=order.order_id) }}">View</a>
+                                    <form method="post" action="{{ url_for('delete_order', order_id=order.order_id) }}" class="d-inline">
+                                        <button class="btn btn-sm btn-outline-danger">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr><td colspan="7" class="text-center">No orders found.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

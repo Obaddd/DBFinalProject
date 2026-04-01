@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="hero mb-4">
+    <h1 class="display-6 fw-bold">Restaurant Management System</h1>
+    <p class="mb-0">Manage customers, menu items, reservations, orders, and reporting from one dashboard.</p>
+</div>
+
+<div class="row g-3 mb-4">
+    {% for label, value in stats.items() %}
+    <div class="col-md-3">
+        <div class="card card-soft">
+            <div class="card-body">
+                <h6 class="text-muted text-uppercase">{{ label.replace('_', ' ') }}</h6>
+                <div class="display-6 fw-bold">{{ value }}</div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="card card-soft">
+    <div class="card-body">
+        <h3 class="h5 mb-3">Recent Orders</h3>
+        <div class="table-responsive">
+            <table class="table table-striped align-middle">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th>Cost</th>
+                        <th>Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order, customer_name in recent_orders %}
+                    <tr>
+                        <td>{{ order.order_id }}</td>
+                        <td>{{ customer_name }}</td>
+                        <td>{{ order.order_type }}</td>
+                        <td>{{ order.status }}</td>
+                        <td>{{ order.cost|currency }}</td>
+                        <td>{{ order.order_time.strftime('%Y-%m-%d %H:%M') }}</td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="6" class="text-center">No orders yet.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

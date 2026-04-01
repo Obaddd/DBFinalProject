@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="card card-soft">
+            <div class="card-body">
+                <h2 class="h5">Add Menu Item</h2>
+                <form method="post" action="{{ url_for('add_menu_item') }}">
+                    <div class="mb-3"><label class="form-label">Food Name</label><input name="food_name" class="form-control" required></div>
+                    <div class="mb-3"><label class="form-label">Category</label><input name="category" class="form-control" required></div>
+                    <div class="mb-3"><label class="form-label">Price</label><input name="price" step="0.01" type="number" class="form-control" required></div>
+                    <div class="form-check mb-3"><input class="form-check-input" type="checkbox" name="is_available" checked><label class="form-check-label">Available</label></div>
+                    <button class="btn btn-dark w-100">Add Item</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        <div class="card card-soft">
+            <div class="card-body">
+                <h2 class="h5">Menu</h2>
+                <div class="table-responsive">
+                    <table class="table table-striped align-middle">
+                        <thead><tr><th>Name</th><th>Category</th><th>Price</th><th>Status</th><th>Actions</th></tr></thead>
+                        <tbody>
+                            {% for item in items %}
+                            <tr>
+                                <td>{{ item.food_name }}</td>
+                                <td>{{ item.category }}</td>
+                                <td>{{ item.price|currency }}</td>
+                                <td>{{ 'Available' if item.is_available else 'Disabled' }}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editMenu{{ loop.index }}">Edit</button>
+                                    <form method="post" action="{{ url_for('delete_menu_item', food_name=item.food_name) }}" class="d-inline">
+                                        <button class="btn btn-sm btn-outline-danger">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            <div class="modal fade" id="editMenu{{ loop.index }}" tabindex="-1">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header"><h5 class="modal-title">Edit Menu Item</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                                        <form method="post" action="{{ url_for('edit_menu_item', food_name=item.food_name) }}">
+                                            <div class="modal-body">
+                                                <div class="mb-3"><label class="form-label">Category</label><input name="category" class="form-control" value="{{ item.category }}" required></div>
+                                                <div class="mb-3"><label class="form-label">Price</label><input name="price" type="number" step="0.01" class="form-control" value="{{ item.price }}" required></div>
+                                                <div class="form-check mb-3"><input class="form-check-input" type="checkbox" name="is_available" {% if item.is_available %}checked{% endif %}><label class="form-check-label">Available</label></div>
+                                            </div>
+                                            <div class="modal-footer"><button class="btn btn-primary">Save changes</button></div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            {% else %}
+                            <tr><td colspan="5" class="text-center">No menu items found.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

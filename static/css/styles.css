@@ -1,0 +1,24 @@
+body {
+    background: #f8f9fa;
+}
+
+.hero {
+    background: linear-gradient(135deg, #212529, #495057);
+    color: white;
+    border-radius: 1rem;
+    padding: 2rem;
+}
+
+.card-soft {
+    border: none;
+    border-radius: 1rem;
+    box-shadow: 0 0.5rem 1.5rem rgba(0,0,0,0.08);
+}
+
+.table thead th {
+    white-space: nowrap;
+}
+
+.badge-status {
+    font-size: 0.9rem;
+}

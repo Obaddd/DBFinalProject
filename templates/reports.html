@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="card card-soft h-100">
+            <div class="card-body">
+                <h2 class="h5">Reservation Report (JOIN: reservations + customers + tables)</h2>
+                <div class="table-responsive">
+                    <table class="table table-striped align-middle">
+                        <thead><tr><th>Reservation ID</th><th>Customer</th><th>Table</th><th>Time</th><th>Status</th></tr></thead>
+                        <tbody>
+                            {% for reservation, customer_name, table_id in reservation_report %}
+                            <tr>
+                                <td>{{ reservation.reservation_id }}</td>
+                                <td>{{ customer_name }}</td>
+                                <td>{{ table_id }}</td>
+                                <td>{{ reservation.reservation_time.strftime('%Y-%m-%d %H:%M') }}</td>
+                                <td>{{ reservation.status }}</td>
+                            </tr>
+                            {% else %}
+                            <tr><td colspan="5" class="text-center">No reservations found.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-5">
+        <div class="card card-soft h-100">
+            <div class="card-body">
+                <h2 class="h5">Customer Spending (JOIN: customers + orders)</h2>
+                <div class="table-responsive">
+                    <table class="table table-striped align-middle">
+                        <thead><tr><th>Customer</th><th>Total Spent</th></tr></thead>
+                        <tbody>
+                            {% for name, total_spent in spending_report %}
+                            <tr>
+                                <td>{{ name }}</td>
+                                <td>{{ total_spent|currency }}</td>
+                            </tr>
+                            {% else %}
+                            <tr><td colspan="2" class="text-center">No data found.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
