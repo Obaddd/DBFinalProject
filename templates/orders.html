@@ -1,91 +1,96 @@
 {% extends 'base.html' %}
 {% block content %}
+<div class="section-heading mb-4">
+    <div>
+        <p class="section-kicker">Service flow</p>
+        <h1 class="section-title">Orders</h1>
+    </div>
+    <div class="section-actions">
+        <span class="soft-tag"><i class="bi bi-receipt-cutoff"></i> {{ order_rows|length }} active records</span>
+    </div>
+</div>
 <div class="row g-4">
-    <div class="col-lg-4">
-        <div class="card card-soft">
-            <div class="card-body">
-                <h2 class="h5">Create Order</h2>
-                <form method="post" action="{{ url_for('add_order') }}">
-                    <div class="mb-3">
-                        <label class="form-label">Customer</label>
-                        <select name="customer_id" class="form-select" required>
-                            {% for customer in customers %}<option value="{{ customer.customer_id }}">{{ customer.name }}</option>{% endfor %}
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Order Type</label>
-                        <select name="order_type" class="form-select">
-                            <option>Pickup</option>
-                            <option>Dine-In</option>
-                            <option>Delivery</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Status</label>
-                        <select name="status" class="form-select">
-                            <option>Placed</option>
-                            <option>Preparing</option>
-                            <option>Ready</option>
-                            <option>Completed</option>
-                        </select>
-                    </div>
-                    <h3 class="h6 mt-4">Order Items</h3>
-                    {% for i in range(3) %}
-                    <div class="border rounded p-3 mb-3">
-                        <div class="mb-2">
-                            <label class="form-label">Menu Item</label>
-                            <select name="food_name" class="form-select">
-                                <option value="">Select an item</option>
-                                {% for item in menu_items %}<option value="{{ item.food_name }}">{{ item.food_name }} - {{ item.price|currency }}</option>{% endfor %}
-                            </select>
-                        </div>
+    <div class="col-xl-4">
+        <div class="app-card h-100 sticky-lg-top top-offset">
+            <div class="card-header-row mb-3">
+                <div>
+                    <p class="section-kicker mb-1">Create</p>
+                    <h2 class="section-title mb-0">New order</h2>
+                </div>
+                <span class="icon-badge"><i class="bi bi-bag-plus-fill"></i></span>
+            </div>
+            <form method="post" action="{{ url_for('add_order') }}" class="app-form">
+                <div class="mb-3">
+                    <label class="form-label">Customer</label>
+                    <select name="customer_id" class="form-select" required>
+                        {% for customer in customers %}<option value="{{ customer.customer_id }}">{{ customer.name }}</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6"><label class="form-label">Order type</label><select name="order_type" class="form-select"><option>Pickup</option><option>Dine-In</option><option>Delivery</option></select></div>
+                    <div class="col-md-6"><label class="form-label">Status</label><select name="status" class="form-select"><option>Placed</option><option>Preparing</option><option>Ready</option><option>Completed</option></select></div>
+                </div>
+                <div class="card-subpanel mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
                         <div>
-                            <label class="form-label">Quantity</label>
-                            <input name="quantity" type="number" min="1" class="form-control" placeholder="1">
+                            <div class="subpanel-title">Order items</div>
+                            <div class="subpanel-text">Choose up to 3 items for a quick order build.</div>
                         </div>
+                    </div>
+                    {% for i in range(3) %}
+                    <div class="order-item-block {% if not loop.last %}mb-3{% endif %}">
+                        <label class="form-label">Menu item {{ loop.index }}</label>
+                        <select name="food_name" class="form-select mb-2">
+                            <option value="">Select an item</option>
+                            {% for item in menu_items %}<option value="{{ item.food_name }}">{{ item.food_name }} - {{ item.price|currency }}</option>{% endfor %}
+                        </select>
+                        <input name="quantity" type="number" min="1" class="form-control" placeholder="Quantity">
                     </div>
                     {% endfor %}
-                    <button class="btn btn-dark w-100">Create Order</button>
-                </form>
-            </div>
+                </div>
+                <button class="btn btn-primary btn-pill w-100"><i class="bi bi-plus-lg"></i> Create Order</button>
+            </form>
         </div>
     </div>
-    <div class="col-lg-8">
-        <div class="card card-soft">
-            <div class="card-body">
-                <h2 class="h5">Orders</h2>
-                <div class="table-responsive">
-                    <table class="table table-striped align-middle">
-                        <thead><tr><th>ID</th><th>Customer</th><th>Type</th><th>Status</th><th>Items</th><th>Cost</th><th>Actions</th></tr></thead>
-                        <tbody>
-                            {% for order, customer_name, item_count in order_rows %}
-                            <tr>
-                                <td>{{ order.order_id }}</td>
-                                <td>{{ customer_name }}</td>
-                                <td>{{ order.order_type }}</td>
-                                <td>
-                                    <form method="post" action="{{ url_for('update_order_status', order_id=order.order_id) }}" class="d-flex gap-2">
-                                        <select name="status" class="form-select form-select-sm">
-                                            {% for status in ['Placed','Preparing','Ready','Completed'] %}<option {% if order.status == status %}selected{% endif %}>{{ status }}</option>{% endfor %}
-                                        </select>
-                                        <button class="btn btn-sm btn-outline-primary">Save</button>
-                                    </form>
-                                </td>
-                                <td>{{ item_count }}</td>
-                                <td>{{ order.cost|currency }}</td>
-                                <td>
-                                    <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('order_details', order_id=order.order_id) }}">View</a>
-                                    <form method="post" action="{{ url_for('delete_order', order_id=order.order_id) }}" class="d-inline">
-                                        <button class="btn btn-sm btn-outline-danger">Delete</button>
-                                    </form>
-                                </td>
-                            </tr>
-                            {% else %}
-                            <tr><td colspan="7" class="text-center">No orders found.</td></tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+    <div class="col-xl-8">
+        <div class="app-card">
+            <div class="card-header-row">
+                <div>
+                    <p class="section-kicker mb-1">Queue</p>
+                    <h2 class="section-title mb-0">Order management</h2>
                 </div>
+            </div>
+            <div class="table-responsive mt-3">
+                <table class="table app-table align-middle">
+                    <thead><tr><th>ID</th><th>Customer</th><th>Type</th><th>Status</th><th>Items</th><th>Cost</th><th class="text-end">Actions</th></tr></thead>
+                    <tbody>
+                        {% for order, customer_name, item_count in order_rows %}
+                        <tr>
+                            <td><span class="table-id">#{{ order.order_id }}</span></td>
+                            <td>{{ customer_name }}</td>
+                            <td><span class="soft-tag">{{ order.order_type }}</span></td>
+                            <td>
+                                <form method="post" action="{{ url_for('update_order_status', order_id=order.order_id) }}" class="d-flex gap-2 align-items-center">
+                                    <select name="status" class="form-select form-select-sm form-select-status">
+                                        {% for status in ['Placed','Preparing','Ready','Completed'] %}<option {% if order.status == status %}selected{% endif %}>{{ status }}</option>{% endfor %}
+                                    </select>
+                                    <button class="btn btn-sm btn-soft"><i class="bi bi-check2"></i></button>
+                                </form>
+                            </td>
+                            <td>{{ item_count }}</td>
+                            <td>{{ order.cost|currency }}</td>
+                            <td class="text-end">
+                                <a class="btn btn-sm btn-soft me-2" href="{{ url_for('order_details', order_id=order.order_id) }}"><i class="bi bi-eye"></i> View</a>
+                                <form method="post" action="{{ url_for('delete_order', order_id=order.order_id) }}" class="d-inline">
+                                    <button class="btn btn-sm btn-soft-danger"><i class="bi bi-trash3"></i> Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="7" class="text-center py-5 text-muted">No orders found.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>

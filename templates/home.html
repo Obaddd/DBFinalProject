@@ -1,54 +1,88 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="hero mb-4">
-    <h1 class="display-6 fw-bold">Restaurant Management System</h1>
-    <p class="mb-0">Manage customers, menu items, reservations, orders, and reporting from one dashboard.</p>
-</div>
+<section class="hero-panel mb-4">
+    <div class="row align-items-center g-4">
+        <div class="col-lg-7">
+            <span class="eyebrow"><i class="bi bi-stars"></i> Restaurant command center</span>
+            <h1 class="hero-title mt-3">Manage your floor, menu, orders, and guests from one polished dashboard.</h1>
+            <p class="hero-subtitle">Keep service organized with quick visibility into reservations, revenue, and active order flow.</p>
+            <div class="d-flex flex-wrap gap-2 mt-4">
+                <a href="{{ url_for('orders') }}" class="btn btn-light btn-pill"><i class="bi bi-receipt-cutoff"></i> Manage Orders</a>
+                <a href="{{ url_for('reservations') }}" class="btn btn-ghost btn-pill"><i class="bi bi-calendar2-check"></i> View Reservations</a>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="hero-metric-card">
+                <div class="metric-chip"><i class="bi bi-graph-up-arrow"></i> Live snapshot</div>
+                <div class="hero-metric-grid">
+                    {% for label, value in stats.items() %}
+                    <div class="hero-metric-item">
+                        <small>{{ label.replace('_', ' ') }}</small>
+                        <strong>{{ value }}</strong>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
+<div class="section-heading mb-3">
+    <div>
+        <p class="section-kicker">Overview</p>
+        <h2 class="section-title">Business metrics</h2>
+    </div>
+</div>
 <div class="row g-3 mb-4">
+    {% set icon_map = {'customers':'people-fill','menu_items':'journal-richtext','tables':'grid-3x3-gap-fill','reservations':'calendar2-check-fill','orders':'receipt-cutoff'} %}
     {% for label, value in stats.items() %}
-    <div class="col-md-3">
-        <div class="card card-soft">
-            <div class="card-body">
-                <h6 class="text-muted text-uppercase">{{ label.replace('_', ' ') }}</h6>
-                <div class="display-6 fw-bold">{{ value }}</div>
+    <div class="col-md-6 col-xl">
+        <div class="metric-card">
+            <div class="metric-icon"><i class="bi bi-{{ icon_map.get(label, 'bar-chart-fill') }}"></i></div>
+            <div>
+                <div class="metric-label">{{ label.replace('_', ' ') }}</div>
+                <div class="metric-value">{{ value }}</div>
             </div>
         </div>
     </div>
     {% endfor %}
 </div>
 
-<div class="card card-soft">
-    <div class="card-body">
-        <h3 class="h5 mb-3">Recent Orders</h3>
-        <div class="table-responsive">
-            <table class="table table-striped align-middle">
-                <thead>
-                    <tr>
-                        <th>Order ID</th>
-                        <th>Customer</th>
-                        <th>Type</th>
-                        <th>Status</th>
-                        <th>Cost</th>
-                        <th>Time</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for order, customer_name in recent_orders %}
-                    <tr>
-                        <td>{{ order.order_id }}</td>
-                        <td>{{ customer_name }}</td>
-                        <td>{{ order.order_type }}</td>
-                        <td>{{ order.status }}</td>
-                        <td>{{ order.cost|currency }}</td>
-                        <td>{{ order.order_time.strftime('%Y-%m-%d %H:%M') }}</td>
-                    </tr>
-                    {% else %}
-                    <tr><td colspan="6" class="text-center">No orders yet.</td></tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+<div class="app-card">
+    <div class="card-header-row">
+        <div>
+            <p class="section-kicker mb-1">Operations</p>
+            <h3 class="section-title mb-0">Recent orders</h3>
         </div>
+        <a class="btn btn-outline-light btn-sm btn-pill dark-outline" href="{{ url_for('orders') }}">Open Orders</a>
+    </div>
+    <div class="table-responsive mt-3">
+        <table class="table app-table align-middle">
+            <thead>
+                <tr>
+                    <th>Order</th>
+                    <th>Customer</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                    <th>Cost</th>
+                    <th>Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order, customer_name in recent_orders %}
+                <tr>
+                    <td><span class="fw-semibold">#{{ order.order_id }}</span></td>
+                    <td>{{ customer_name }}</td>
+                    <td><span class="soft-tag">{{ order.order_type }}</span></td>
+                    <td><span class="status-badge status-{{ order.status|lower|replace(' ', '-') }}">{{ order.status }}</span></td>
+                    <td>{{ order.cost|currency }}</td>
+                    <td>{{ order.order_time.strftime('%Y-%m-%d %H:%M') }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="6" class="text-center py-5 text-muted">No orders yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 {% endblock %}
