@@ -120,13 +120,4 @@ Steps:
 - Ryan Sarwar  
 - Suzanne Biju  
 - Obad Al Jabberi  
-
----
-
-## ✅ Requirements Covered
-
-- Data insertion, deletion, modification, and retrieval  
-- Relational schema implementation  
-- JOIN queries across multiple tables  
-- Functional web application  
-- Cloud deployment capability (AWS)  
+ 
