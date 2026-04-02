@@ -1,40 +1,132 @@
-# Restaurant Management Web App
+# 🍽️ Restaurant Management Web App  
+**Final Project – Database Systems (INFR2810U)**
 
-This is a Flask + MySQL restaurant web application based on the project proposal.
+This is a Flask + MySQL restaurant web application developed as the final project for our Database Systems course.
 
-## Features
-- Customer CRUD
+The application demonstrates a fully functional relational database system integrated with a web interface, supporting full CRUD operations and JOIN-based queries.
+
+---
+
+## 🚀 Features
+
+- Customer CRUD (Create, Read, Update, Delete)
 - Menu CRUD
 - Table CRUD
 - Reservation CRUD
-- Order create, retrieve, status update, delete
-- JOIN-based reports for reservations and customer spending
+- Order management:
+  - Create orders
+  - Retrieve orders
+  - Update order status
+  - Delete orders
+- JOIN-based reports:
+  - Reservations with customer and table details
+  - Customer spending across orders
 
-## Local Run
+---
+
+## ⚙️ How It Works
+
+- Flask handles routing and backend logic  
+- SQLAlchemy interacts with the MySQL database  
+- Data is stored in relational tables  
+- JOIN queries combine multiple tables for reporting  
+- Bootstrap is used for frontend styling  
+
+---
+
+## 💻 Local Run (SQLite – Quick Test)
+
 ```bash
 python -m venv venv
+
 # Windows
 venv\Scripts\activate
+
 # macOS/Linux
 source venv/bin/activate
+
 pip install -r requirements.txt
+
+# Use SQLite (no setup required)
 set DATABASE_URL=sqlite:///restaurant.db
+
 flask --app app init-db
-python app.py
+python -m flask --app app run
 ```
 
-## MySQL Run
-1. Create a MySQL database called `restaurant_app`.
-2. Set `DATABASE_URL`.
-3. Run:
-```bash
-flask --app app init-db
-python app.py
+Open in browser:
+http://127.0.0.1:5000
+
+---
+
+## 🗄️ Running with MySQL (Recommended)
+
+### 1. Create Database
+```sql
+CREATE DATABASE restaurant_db;
 ```
 
-## AWS Deployment Notes
-Use one EC2 instance for the Flask app and Amazon RDS MySQL for the database. Run with gunicorn:
-```bash
-gunicorn --bind 0.0.0.0:8000 app:app
+### 2. Configure Environment Variable
+
+Create a `.env` file in the project root:
+
+```env
+DATABASE_URL=mysql+pymysql://root:YOUR_PASSWORD@localhost/restaurant_db
+SECRET_KEY=your_secret_key
 ```
-Then reverse proxy it with Nginx.
+
+### 3. Initialize Database
+```bash
+flask --app app init-db
+```
+
+### 4. Run Application
+```bash
+python -m flask --app app run
+```
+
+---
+
+## ☁️ AWS Deployment
+
+- EC2 → Flask app  
+- RDS (MySQL) → Database  
+
+Steps:
+1. Create MySQL database in RDS  
+2. Launch EC2 (Ubuntu recommended)  
+3. Clone repo on EC2  
+4. Install dependencies  
+5. Create `.env` with RDS credentials  
+6. Initialize DB:
+   flask --app app init-db  
+7. Run:
+   gunicorn --bind 0.0.0.0:8000 app:app  
+
+---
+
+## 📌 Notes
+
+- `.env`, `venv/`, and local database files are not included  
+- Supports full CRUD and JOIN operations  
+- Meets all project requirements  
+
+---
+
+## 👥 Team Members
+
+- Rafay Khan  
+- Sameer Khan  
+- Ryan Sarwar  
+- Suzanne Biju  
+- Obad Al Jabberi  
+
+---
+
+## ✅ Requirements Covered
+
+- Data insertion, deletion, modification, and retrieval  
+- Relational schema implementation  
+- JOIN queries across multiple tables  
+- Functional web application  
+- Cloud deployment capability (AWS)  
