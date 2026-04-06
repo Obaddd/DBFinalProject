@@ -2,7 +2,7 @@
 {% block content %}
 <div class="section-heading mb-4">
     <div>
-        <p class="section-kicker">Guest planning</p>
+        <p class="section-kicker">Guest bookings</p>
         <h1 class="section-title">Reservations</h1>
     </div>
     <div class="section-actions">
@@ -20,27 +20,12 @@
                 <span class="icon-badge"><i class="bi bi-calendar-plus-fill"></i></span>
             </div>
             <form method="post" action="{{ url_for('add_reservation') }}" class="app-form">
-                <div class="mb-3">
-                    <label class="form-label">Customer</label>
-                    <select name="customer_id" class="form-select" required>
-                        {% for customer in customers %}<option value="{{ customer.customer_id }}">{{ customer.name }}</option>{% endfor %}
-                    </select>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Table</label>
-                    <select name="table_id" class="form-select" required>
-                        {% for table in tables %}<option value="{{ table.table_id }}">Table {{ table.table_id }} - {{ table.table_type }} ({{ table.capacity }} seats)</option>{% endfor %}
-                    </select>
-                </div>
+                <div class="mb-3"><label class="form-label">Customer</label><select name="customer_id" class="form-select" required>{% for customer in customers %}<option value="{{ customer.customer_id }}">{{ customer.name }}</option>{% endfor %}</select></div>
+                <div class="mb-3"><label class="form-label">Table</label><select name="table_id" class="form-select" required>{% for table in tables %}<option value="{{ table.table_id }}">Table {{ table.table_id }} - {{ table.table_type }} ({{ table.capacity }} seats)</option>{% endfor %}</select></div>
                 <div class="mb-3"><label class="form-label">Date &amp; time</label><input name="reservation_time" type="datetime-local" class="form-control" required></div>
-                <div class="mb-3"><label class="form-label">Party size</label><input name="party_size" type="number" class="form-control" required></div>
-                <div class="mb-4">
-                    <label class="form-label">Status</label>
-                    <select name="status" class="form-select">
-                        <option>Booked</option>
-                        <option>Completed</option>
-                        <option>Cancelled</option>
-                    </select>
+                <div class="row g-3 mb-4">
+                    <div class="col-6"><label class="form-label">Party size</label><input name="party_size" type="number" class="form-control" min="1" required></div>
+                    <div class="col-6"><label class="form-label">Status</label><select name="status" class="form-select">{% for s in ['Booked','Completed','Cancelled'] %}<option>{{ s }}</option>{% endfor %}</select></div>
                 </div>
                 <button class="btn btn-primary btn-pill w-100"><i class="bi bi-plus-lg"></i> Add Reservation</button>
             </form>
@@ -51,7 +36,7 @@
             <div class="card-header-row">
                 <div>
                     <p class="section-kicker mb-1">Schedule</p>
-                    <h2 class="section-title mb-0">Reservation list</h2>
+                    <h2 class="section-title mb-0">Upcoming bookings</h2>
                 </div>
             </div>
             <div class="table-responsive mt-3">
@@ -73,25 +58,6 @@
                                 </form>
                             </td>
                         </tr>
-                        <div class="modal fade" id="editReservation{{ reservation.reservation_id }}" tabindex="-1">
-                            <div class="modal-dialog modal-dialog-centered modal-lg">
-                                <div class="modal-content app-modal">
-                                    <div class="modal-header border-0 pb-0"><h5 class="modal-title">Edit reservation</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-                                    <form method="post" action="{{ url_for('edit_reservation', reservation_id=reservation.reservation_id) }}">
-                                        <div class="modal-body">
-                                            <div class="row g-3">
-                                                <div class="col-md-6"><label class="form-label">Customer</label><select name="customer_id" class="form-select" required>{% for customer in customers %}<option value="{{ customer.customer_id }}" {% if customer.customer_id == reservation.customer_id %}selected{% endif %}>{{ customer.name }}</option>{% endfor %}</select></div>
-                                                <div class="col-md-6"><label class="form-label">Table</label><select name="table_id" class="form-select" required>{% for table in tables %}<option value="{{ table.table_id }}" {% if table.table_id == reservation.table_id %}selected{% endif %}>Table {{ table.table_id }} - {{ table.table_type }} ({{ table.capacity }} seats)</option>{% endfor %}</select></div>
-                                                <div class="col-md-6"><label class="form-label">Date &amp; time</label><input name="reservation_time" type="datetime-local" class="form-control" value="{{ reservation.reservation_time.strftime('%Y-%m-%dT%H:%M') }}" required></div>
-                                                <div class="col-md-3"><label class="form-label">Party size</label><input name="party_size" type="number" class="form-control" value="{{ reservation.party_size }}" required></div>
-                                                <div class="col-md-3"><label class="form-label">Status</label><select name="status" class="form-select">{% for s in ['Booked','Completed','Cancelled'] %}<option {% if reservation.status == s %}selected{% endif %}>{{ s }}</option>{% endfor %}</select></div>
-                                            </div>
-                                        </div>
-                                        <div class="modal-footer border-0 pt-0"><button class="btn btn-primary btn-pill px-4">Save changes</button></div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
                         {% else %}
                         <tr><td colspan="7" class="text-center py-5 text-muted">No reservations found.</td></tr>
                         {% endfor %}
@@ -101,4 +67,26 @@
         </div>
     </div>
 </div>
+
+{% for reservation, customer_name, table_type, capacity in reservation_rows %}
+<div class="modal fade" id="editReservation{{ reservation.reservation_id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content app-modal">
+            <div class="modal-header border-0 pb-0"><h5 class="modal-title">Edit reservation</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+            <form method="post" action="{{ url_for('edit_reservation', reservation_id=reservation.reservation_id) }}">
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-6"><label class="form-label">Customer</label><select name="customer_id" class="form-select" required>{% for customer in customers %}<option value="{{ customer.customer_id }}" {% if customer.customer_id == reservation.customer_id %}selected{% endif %}>{{ customer.name }}</option>{% endfor %}</select></div>
+                        <div class="col-md-6"><label class="form-label">Table</label><select name="table_id" class="form-select" required>{% for table in tables %}<option value="{{ table.table_id }}" {% if table.table_id == reservation.table_id %}selected{% endif %}>Table {{ table.table_id }} - {{ table.table_type }} ({{ table.capacity }} seats)</option>{% endfor %}</select></div>
+                        <div class="col-md-6"><label class="form-label">Date &amp; time</label><input name="reservation_time" type="datetime-local" class="form-control" value="{{ reservation.reservation_time.strftime('%Y-%m-%dT%H:%M') }}" required></div>
+                        <div class="col-md-3"><label class="form-label">Party size</label><input name="party_size" type="number" class="form-control" min="1" value="{{ reservation.party_size }}" required></div>
+                        <div class="col-md-3"><label class="form-label">Status</label><select name="status" class="form-select">{% for s in ['Booked','Completed','Cancelled'] %}<option {% if reservation.status == s %}selected{% endif %}>{{ s }}</option>{% endfor %}</select></div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0"><button class="btn btn-primary btn-pill px-4">Save changes</button></div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endfor %}
 {% endblock %}
