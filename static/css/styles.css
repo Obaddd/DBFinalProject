@@ -134,9 +134,17 @@ a { text-decoration: none; }
 .app-alert {
     border: 0;
     border-radius: 18px;
+    box-shadow: 0 10px 25px rgba(15,23,42,0.08);
+}
+
+.app-alert.alert-success {
     background: rgba(22, 163, 74, 0.1);
     color: #166534;
-    box-shadow: 0 10px 25px rgba(22,163,74,0.08);
+}
+
+.app-alert.alert-danger {
+    background: rgba(220, 38, 38, 0.1);
+    color: #991b1b;
 }
 
 .hero-panel,
@@ -479,4 +487,17 @@ a { text-decoration: none; }
     .hero-title { font-size: 2rem; }
     .hero-metric-grid { grid-template-columns: 1fr; }
     .metric-card { padding: 18px; }
+}
+
+
+.modal {
+    z-index: 1060;
+}
+
+.modal-backdrop {
+    z-index: 1055;
+}
+
+.modal-content {
+    pointer-events: auto;
 }
