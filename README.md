@@ -105,14 +105,6 @@ Steps:
 
 ---
 
-## 📌 Notes
-
-- `.env`, `venv/`, and local database files are not included  
-- Supports full CRUD and JOIN operations  
-- Meets all project requirements  
-
----
-
 ## 👥 Team Members
 
 - Rafay Khan  
